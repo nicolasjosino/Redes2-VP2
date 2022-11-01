@@ -2,7 +2,7 @@ import java.util.LinkedList;
 
 public class IP_PROTOCOL {
 
-    // 1° Questão
+    // 1ª Questão
     public static void ipRange(String networkAddress) {
         LinkedList<String> listIp;
 
@@ -15,60 +15,39 @@ public class IP_PROTOCOL {
         String mask;
         int quantHosts;
 
-        // Split endereçoRede e seta atributos
         stringInitIp = networkAddress.split("/")[0];
         mask = networkAddress.split("/")[1];
 
-
-        // Transforma a String IP em uma LinkedList de String contendo os bits de cada numero
         listIp = linkedListIp(stringInitIp);
-
-        // Transforma a string de binarios no long correspondente
         longInitIp = binaryToLong(listIp);
-
-
-        // Pega a quantidade de Hosts da mascara de subrede
         quantHosts = getNumberOfHostsAllowed(mask);
+
         System.out.println("Quantidade de Hosts: " + quantHosts);
 
-
-        // Soma o long do IP à quantHosts para saber o longFinal, que é o range do IP
         longFinalIp = longInitIp + quantHosts;
-
-
-        //Agr basta transformar o numero longFinal(long) em Ip (String)
         stringFinalIp = longToIpAddressString(longFinalIp);
 
         System.out.println("Range: " + stringInitIp + " ~~~ " + stringFinalIp + "\n");
     }
 
-    // 2° Questão
+    // 2ª Questão
     public static void getSubnetNeeded(String enderecoRede, int n) {
         LinkedList<String> listIp;
         LinkedList<String> subnetList = new LinkedList<>();
 
         listIp = linkedListIp(enderecoRede.split("/")[0]);
-//        System.out.println("listIp " + listIp);
-
         String mask = enderecoRede.split("/")[1];
 
         int result = (int) Math.ceil(Math.log(n) / Math.log(2));
         int quantHosts = getNumberOfHostsAllowed(mask);
-
         long longInitIp = binaryToLong(listIp);
-//        System.out.println("longInitIp: " + longInitIp);
 
         System.out.println("Bits necessarios para " + quantHosts + " hosts: " + result);
 
-
-        // Mascara de subrede + resultado
         int newSubnet = Integer.parseInt(mask) + result;
-
         int numberNewHosts = getNumberOfHostsAllowed(Integer.toString(newSubnet));
 
         if (n * numberNewHosts <= quantHosts) {
-//            System.out.println("Quantidade de Hosts (" + quantHosts + ") maior/igual que quantidade de novos hosts(" + (n * numberNewHosts) + ")");
-
             System.out.println("Novas Subredes: ");
 
             for (int i = 0; i < n; i++) {
@@ -76,12 +55,11 @@ public class IP_PROTOCOL {
                 System.out.println(subnetList.get(i));
             }
         } else {
-//            System.out.println("Quantidade de Hosts (" + quantHosts + ") menor que quantidade de novos hosts(" + (n * numberNewHosts) + ")");
             System.out.println("Não há como gerar subredes");
         }
     }
 
-    // 3° Questão
+    // 3ª Questão
     public static boolean check_if_ip_belongs_to_network(String netAddress, String ipAddress) {
         LinkedList<String> listIpAddress;
         long longIpAddress;
@@ -92,14 +70,10 @@ public class IP_PROTOCOL {
         String ipNetAddress = netAddress.split("/")[0];
         String maskNetAddress = netAddress.split("/")[1];
         int range;
-//        int nHosts;
 
-
-        // Retorna o long do ipAddress
         listIpAddress = linkedListIp(ipAddress);
         longIpAddress = binaryToLong(listIpAddress);
 
-        // Retorna o long do netAddress
         listNetAddress = linkedListIp(ipNetAddress);
         longInitNetAddress = binaryToLong(listNetAddress);
         range = getNumberOfHostsAllowed(maskNetAddress);
@@ -114,12 +88,14 @@ public class IP_PROTOCOL {
         }
     }
 
-    // 4° Questão
+    // 4ª Questão
     public static void checks_if_ip_belongs_to_subnet(LinkedList<String> subnets, String ip) {
         String subnetIp;
         String ip32bits;
         String longestPrefix = "";
         int countLongestPrefix = 0;
+        int longestPrefixMask = 0;
+        int mask;
 
         ip32bits = return32BitString(ip);
 
@@ -130,6 +106,7 @@ public class IP_PROTOCOL {
 
                 // Retorna uma String no formato de IP ( Extrai somente o IP do endereço de rede )
                 subnetIp = s.split("/")[0];
+                mask = Integer.parseInt(s.split("/")[1]);
 
                 // Passa uma String no formato IP e retorna um String no formato 32bits
                 subnetIp = return32BitString(subnetIp);
@@ -138,8 +115,8 @@ public class IP_PROTOCOL {
                 int sizeIp32bits = ip32bits.length();
                 int count = 0;
 
-                // Compara os 32 bits do IP e compara se os bits são iguais
-                // Para cada bit igual adiciona no contador
+                 /*Compara os 32 bits do IP e compara se os bits são iguais
+                 Para cada bit igual adiciona no contador*/
                 for (int i = 0; i < sizeIp32bits; i++) {
 
                     char bitIp32bits = ip32bits.charAt(i);
@@ -150,23 +127,21 @@ public class IP_PROTOCOL {
                     }
                 }
 
-
-                if (count > countLongestPrefix) {
+                if ((count >= countLongestPrefix) && (mask >= longestPrefixMask)) {
                     countLongestPrefix = count;
                     longestPrefix = s;
+                    longestPrefixMask = mask;
                 }
             }
-
         }
 
         System.out.println("Longest Prefix: " + longestPrefix);
-
     }
 
 
-    // Recebe um IP em String -> Faz sua formatação -> Transforma cada elemento em binario ->
-    // Adiciona o elemento na linkedList ->
-    // Chama a função completeLeftZeros para completar a LinkedList em 8 bits completando os 0 a esquerda faltando
+    /*Recebe um IP em String -> Faz sua formatação -> Transforma cada elemento em binario ->
+    Adiciona o elemento na linkedList ->
+    Chama a função completeLeftZeros para completar a LinkedList em 8 bits completando os 0 a esquerda faltando*/
     private static LinkedList<String> linkedListIp(String x) {
         String[] octs = x.split("\\.");
         LinkedList<String> list = new LinkedList<>();
@@ -197,7 +172,6 @@ public class IP_PROTOCOL {
                 x.set(x.indexOf(s), newString);
             }
         }
-
         return x;
     }
 
@@ -206,7 +180,6 @@ public class IP_PROTOCOL {
         long l = Long.parseLong(x);
         return Long.toBinaryString(l);
     }
-
 
     // Recede uma LinkedList de String e retorna o valor Long correspondente
     private static Long binaryToLong(LinkedList<String> x) {
@@ -227,13 +200,12 @@ public class IP_PROTOCOL {
                 l += Math.pow(2, position);
             }
         }
-
         return l;
     }
 
 
-    // Recebe uma LinkedList de String Contendo os 4Bytes completos
-    // Transforma e retorna em uma String de binarios de 32bits
+    /*Recebe uma LinkedList de String Contendo os 4Bytes completos
+    Transforma e retorna em uma String de binarios de 32bits*/
     private static String getBinaryStringIp(LinkedList<String> x) {
         StringBuilder binaryString = new StringBuilder();
         for (String s : x) {
@@ -255,8 +227,6 @@ public class IP_PROTOCOL {
         }
 
         quant = (int) Math.pow(2, quant);
-
-        // System.out.println("Subnet Masks: " + netMask);
 
         return quant;
     }
@@ -288,6 +258,4 @@ public class IP_PROTOCOL {
 
         return bit32String;
     }
-
-
 }
