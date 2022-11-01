@@ -101,22 +101,16 @@ public class IP_PROTOCOL {
 
         for (String s : subnets) {
 
-            // Se IP pertencer a Subrede entao executa o codigo
             if (check_if_ip_belongs_to_network(s, ip)) {
 
-                // Retorna uma String no formato de IP ( Extrai somente o IP do endereço de rede )
                 subnetIp = s.split("/")[0];
                 mask = Integer.parseInt(s.split("/")[1]);
 
-                // Passa uma String no formato IP e retorna um String no formato 32bits
                 subnetIp = return32BitString(subnetIp);
 
-                // Checa o maior prefixo e mascara
                 int sizeIp32bits = ip32bits.length();
                 int count = 0;
 
-                 /*Compara os 32 bits do IP e compara se os bits são iguais
-                 Para cada bit igual adiciona no contador*/
                 for (int i = 0; i < sizeIp32bits; i++) {
 
                     char bitIp32bits = ip32bits.charAt(i);
@@ -134,7 +128,6 @@ public class IP_PROTOCOL {
                 }
             }
         }
-
         System.out.println("Longest Prefix: " + longestPrefix);
     }
 
